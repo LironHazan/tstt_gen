@@ -1,0 +1,9 @@
+[
+    {
+      "name": "first_suite",
+      "tests": [
+        { "name": "first test", "objective": "testing first scenario is valid", "steps": "1. write some rust 2. read some rust" },
+        { "name": "sec test", "objective": "testing sec scenario stability", "steps": "1. generate typescript 2. output" }
+      ]
+    }
+]
