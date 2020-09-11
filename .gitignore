@@ -1,2 +1,5 @@
 /target
 .idea
+private
+node_modules
+tables
