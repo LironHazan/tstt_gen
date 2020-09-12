@@ -1,3 +1,4 @@
 {
-  "ast_annotation": "Test Flow"
+  "tables": ["cust_d_r", "dv_hunt_f"],
+  "output_dir": "/Users/lironh/dev-liron/rust/tstt_gen_git/tstt_gen"
 }

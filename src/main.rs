@@ -11,12 +11,13 @@ use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct PrivateConfig {
-    tables: Vec<String>
+    tables: Vec<String>,
+    output_dir: String
 }
 
 #[tokio::main]
 async fn main()  -> Result<(), std::io::Error> {
-    let config_path = Path::new("private_config.json");
+    let config_path = Path::new("config.json");
     let config_file = File::open(config_path).expect("file not found");
     let config: PrivateConfig = serde_json::from_reader(config_file).expect("error while reading json");
 
@@ -28,7 +29,7 @@ async fn main()  -> Result<(), std::io::Error> {
         let json_file = File::open(json_file_path).expect("file not found");
         let suite = serde_json::from_reader(json_file).expect("error while reading json");
 
-        test_gen::generate_test_suite(suite, table).await?;
+        test_gen::generate_test_suite(suite, format!("{}/{}", config.output_dir,table)).await?;
     }
 
     Ok(())
