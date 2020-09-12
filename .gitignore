@@ -1,5 +1,6 @@
 /target
 .idea
+private_config.json
 sheets/private
 sheets/node_modules
 sheets/tables

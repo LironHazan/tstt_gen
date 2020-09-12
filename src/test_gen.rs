@@ -16,10 +16,10 @@ pub struct Suite {
     tests: Vec<Test>
 }
 
-pub async fn generate_test_suite(test_suites: Vec<Suite>) -> Result<(), std::io::Error> {
+pub async fn generate_test_suite(test_suites: Vec<Suite>, path: String) -> Result<(), std::io::Error> {
     for suite in test_suites.iter() {
-        // Create file per suite ** todo - support different OS types
-        let mut test_file = File::create(format!("{}.ts", suite.name)).await?;
+        // Create file per suite
+        let mut test_file = File::create(format!("{}/{}.ts", path, suite.name)).await?;
         test_file.write_all(format!("// Test Suite was generated for: {}\n", suite.name).as_bytes()).await?;
         let logger = "logger";
         test_file.write_all(format!("export const {} = ({}) => {{", suite.name, logger).as_bytes()).await?;
