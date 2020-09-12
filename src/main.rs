@@ -8,10 +8,10 @@ use std::path::Path;
 
 #[tokio::main]
 async fn main()  -> Result<(), std::io::Error> {
-    let json_file_path = Path::new("sheets/tables/test.json");
+    let json_file_path = Path::new("sheets/tables/dv_hunt_f.json");
     let json_file = File::open(json_file_path).expect("file not found");
     let suite = serde_json::from_reader(json_file).expect("error while reading json");
 
-    test_gen::generate_test_suite(suite, "").await?;
+    test_gen::generate_test_suite(suite).await?;
     Ok(())
 }

@@ -16,7 +16,7 @@ pub struct Suite {
     tests: Vec<Test>
 }
 
-pub async fn generate_test_suite(test_suites: Vec<Suite>, filepath: &str) -> Result<(), std::io::Error> {
+pub async fn generate_test_suite(test_suites: Vec<Suite>) -> Result<(), std::io::Error> {
     for suite in test_suites.iter() {
         // Create file per suite ** todo - support different OS types
         let mut test_file = File::create(format!("{}.ts", suite.name)).await?;

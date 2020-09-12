@@ -119,7 +119,8 @@ function fetchTable(sheets, range, spreadsheetId) {
 function tableAsJson(rows, tableName) {
     return new Promise((resolve, reject) => {
         if (rows) {
-            fs.writeFile(`tables/${tableName}.json`, JSON.stringify(rows), (err) => {
+            const model = transformToTestSuiteModel(rows);
+            fs.writeFile(`tables/${tableName}.json`, JSON.stringify(model), (err) => {
                 if (err) {
                     console.error(err);
                     reject(err);
@@ -132,4 +133,24 @@ function tableAsJson(rows, tableName) {
             resolve();
         }
     })
+}
+// before: [suite_name, test_name, objective, null, steps, expected]
+// helper struct: { suitename: [tests ..] }
+// final struct: [{name, tests: [{name, objective, steps}]}]
+function transformToTestSuiteModel(rows) { // O(n)
+    // prepare suites - to map
+    const suites = {};
+    for (const row of rows) {
+        const name = row[0].replace(' ', '')
+        const testName = row[1].replace(' ', '_');
+        if (!suites[name]) {
+            suites[name] = [];
+        }
+        suites[name].push({name: testName, objective: row[2], steps: row[4]});
+    }
+    const testSuites = [];
+    for (const suite of Object.keys(suites)) {
+        testSuites.push({name: suite, tests: suites[suite]});
+    }
+    return testSuites;
 }
