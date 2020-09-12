@@ -13,4 +13,4 @@ used by tstt_gen
 ### How to:
 
 - Locate your credentials.json under a cred folder
-- Run `  node ./sheets_as_json.js `
+- Run `cd sheets && node ./sheets_as_json.js `
