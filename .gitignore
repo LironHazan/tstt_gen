@@ -1,5 +1,5 @@
 /target
 .idea
-private
-node_modules
-tables
+sheets/private
+sheets/node_modules
+sheets/tables

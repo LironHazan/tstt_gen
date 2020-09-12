@@ -8,7 +8,7 @@ use std::path::Path;
 
 #[tokio::main]
 async fn main()  -> Result<(), std::io::Error> {
-    let json_file_path = Path::new("tables/test.json");
+    let json_file_path = Path::new("sheets/tables/test.json");
     let json_file = File::open(json_file_path).expect("file not found");
     let suite = serde_json::from_reader(json_file).expect("error while reading json");
 
