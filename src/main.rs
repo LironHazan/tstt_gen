@@ -19,13 +19,14 @@ struct PrivateConfig {
 #[tokio::main]
 async fn main()  -> Result<(), std::io::Error> {
     let config = get_config("config.json");
+    println!("Generating test suites into: {}", config.output_dir);
 
     for table in config.tables {
         fs::create_dir(&table)?;
-        let suite = parsed_tables(&table);
+        let suite = get_parsed_tables(&table);
         test_gen::generate_test_suite(suite, format!("{}/{}", config.output_dir,table)).await?;
     }
-
+    println!("Done!");
     Ok(())
 }
 // Get config obj
@@ -35,7 +36,7 @@ fn get_config(filename: &str) -> PrivateConfig {
     return serde_json::from_reader(config_file).expect("error while reading json");
 }
 // Get the parsed tables data based on the tests sheets
-fn parsed_tables(table: &str) -> Vec<Suite> {
+fn get_parsed_tables(table: &str) -> Vec<Suite> {
     let path = format!("sheets/tables/{}.json", table);
     let json_file_path = Path::new(&path);
     let json_file = File::open(json_file_path).expect("file not found");
