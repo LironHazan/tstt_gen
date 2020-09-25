@@ -1,13 +1,15 @@
 mod test_gen;
+mod utils;
 
 extern crate serde;
 extern crate serde_json;
 
 use std::fs::File;
 use std::path::Path;
-use std::fs;
+use tokio::fs::*;
 use serde_derive::{Deserialize, Serialize};
 use crate::test_gen::Suite;
+use ansi_term::Colour::{ Yellow, Green};
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -17,16 +19,19 @@ struct PrivateConfig {
 }
 
 #[tokio::main]
-async fn main()  -> Result<(), std::io::Error> {
+async fn main() -> Result<(), std::io::Error> {
     let config = get_config("config.json");
-    println!("Generating test suites into: {}", config.output_dir);
+    println!("{}", Yellow.paint("Generating test suites into: "));
+    println!("{}", Yellow.paint(&config.output_dir));
+
+    utils::clear_workspace(&config.output_dir, &config.tables)?;
 
     for table in config.tables {
-        fs::create_dir(&table)?;
+        create_dir(&table).await?;
         let suite = get_parsed_tables(&table);
         test_gen::generate_test_suite(suite, format!("{}/{}", config.output_dir,table)).await?;
     }
-    println!("Done!");
+    println!("{}", Green.paint("Done!"));
     Ok(())
 }
 // Get config obj

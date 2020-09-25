@@ -1,4 +1,4 @@
-use tokio::fs::File;
+use tokio::fs::*;
 use tokio::prelude::*; // for write_all()
 use serde_derive::{Deserialize, Serialize};
 
@@ -8,6 +8,7 @@ pub struct Test {
     name: String,
     objective: String,
     steps: String,
+    expected: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -37,15 +38,23 @@ pub async fn generate_test_suite(test_suites: Vec<Suite>, path: String) -> Resul
 
 fn generate_test_template(test: &Test, logger: &str) -> String {
     // Test template defaults
-    let annotation_start = String::from("\n\n/** Test Flow:");
+    let annotation_start = String::from("\n\n/** @Steps:");
     let annotation_end = String::from("\n**/");
-    let step_prefix = String::from("\n*");
+    let step_prefix = String::from("\n");
+    let expected = String::from("* @Expected:");
+
     let test_template = format!("\ntest.requestHooks({})('{}', async () => {{}});", logger, test.objective);
+
+    let stepz: String = test.steps.lines()
+        .map(|step| format!("* {} \n", step) ).collect();
+    let s = String::from(stepz);
 
     let test_template =
         annotation_start
             + &step_prefix
-            + &test.steps
+            + &s
+            + &*expected
+            + &test.expected
             + &annotation_end
             + &test_template;
     test_template

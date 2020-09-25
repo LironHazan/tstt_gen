@@ -146,7 +146,7 @@ function transformToTestSuiteModel(rows) { // O(n)
         if (!suites[name]) {
             suites[name] = [];
         }
-        suites[name].push({name: testName, objective: row[2], steps: row[4]});
+        suites[name].push({name: testName, objective: row[2] || '', steps: row[4] || '', expected: row[5] || ''});
     }
     const testSuites = [];
     for (const suite of Object.keys(suites)) {
