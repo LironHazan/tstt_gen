@@ -40,8 +40,7 @@ pub fn get_config(filename: &str) -> PrivateConfig {
 }
 
 // Get the parsed tables data based on the tests sheets
-pub fn get_parsed_tables(table: &str) -> Vec<Suite> {
-  let path = format!("sheets/tables/{}.json", table);
+pub fn get_parsed_tables(path: String) -> Vec<Suite> {
   let json_file_path = Path::new(&path);
   let json_file = File::open(json_file_path).expect("file not found");
   return serde_json::from_reader(json_file).expect("error while reading json");

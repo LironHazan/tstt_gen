@@ -12,8 +12,10 @@ async fn main() -> Result<(), std::io::Error> {
     println!("{}", utils::get_project_ascii_art());
     println!("{}", Green.paint("Generating test suites into: "));
     println!("{}", Green.paint(&config.output_dir));
-
+    // Removes the previous templates so be careful not to override anything!
     utils::clear_workspace(&config.output_dir, &config.tables)?;
+    // Iterates the given suite tables (as json files) and generate Typescript suite files
+    // containing empty test templates
     test_gen::generate_all_suites(config.tables, config.output_dir).await?;
     println!("{}", Green.paint("Done!"));
     Ok(())

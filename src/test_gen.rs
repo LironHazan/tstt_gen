@@ -45,15 +45,12 @@ fn generate_test_template(test: &Test, logger: &str) -> String {
     let expected = String::from("* @Expected:");
 
     let test_template = format!("\ntest.requestHooks({})('{}', async () => {{}});", logger, test.objective);
-
-    let stepz: String = test.steps.lines()
-        .map(|step| format!("* {} \n", step) ).collect();
-    let s = String::from(stepz);
+    let steps = normalize_test_steps(&test.steps);
 
     let test_template =
         annotation_start
             + &step_prefix
-            + &s
+            + &steps
             + &*expected
             + &test.expected
             + &annotation_end
@@ -61,10 +58,18 @@ fn generate_test_template(test: &Test, logger: &str) -> String {
     test_template
 }
 
+fn normalize_test_steps(steps: &String) -> String {
+    // Adding the astrix before each test for preserving the Typescript comment look
+    let test_steps: String = steps.lines()
+        .map(|step| format!("* {} \n", step) ).collect();
+    String::from(test_steps)
+}
+
 pub async fn generate_all_suites(tables: Vec<String>, output_dir: String) -> Result<(), std::io::Error> {
     for table in tables {
         create_dir(&table).await?;
-        let suite = utils::get_parsed_tables(&table);
+        let path = format!("sheets/tables/{}.json", table);
+        let suite = utils::get_parsed_tables(path);
         generate_test_suite(suite, format!("{}/{}", output_dir,table)).await?;
     }
     Ok(())
