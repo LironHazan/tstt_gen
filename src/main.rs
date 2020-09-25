@@ -7,22 +7,15 @@ extern crate serde_json;
 use std::fs::File;
 use std::path::Path;
 use tokio::fs::*;
-use serde_derive::{Deserialize, Serialize};
 use crate::test_gen::Suite;
-use ansi_term::Colour::{ Yellow, Green};
-
-
-#[derive(Serialize, Deserialize, Debug)]
-struct PrivateConfig {
-    tables: Vec<String>,
-    output_dir: String
-}
+use ansi_term::Colour::{ Green};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let config = get_config("config.json");
-    println!("{}", Yellow.paint("Generating test suites into: "));
-    println!("{}", Yellow.paint(&config.output_dir));
+    let config = utils::get_config("config.json");
+    println!("{}", utils::get_project_ascii_art());
+    println!("{}", Green.paint("Generating test suites into: "));
+    println!("{}", Green.paint(&config.output_dir));
 
     utils::clear_workspace(&config.output_dir, &config.tables)?;
 
@@ -34,12 +27,7 @@ async fn main() -> Result<(), std::io::Error> {
     println!("{}", Green.paint("Done!"));
     Ok(())
 }
-// Get config obj
-fn get_config(filename: &str) -> PrivateConfig {
-    let config_path = Path::new(filename);
-    let config_file = File::open(config_path).expect("file not found");
-    return serde_json::from_reader(config_file).expect("error while reading json");
-}
+
 // Get the parsed tables data based on the tests sheets
 fn get_parsed_tables(table: &str) -> Vec<Suite> {
     let path = format!("sheets/tables/{}.json", table);
