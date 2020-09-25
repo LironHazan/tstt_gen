@@ -1,6 +1,7 @@
 use tokio::fs::*;
 use tokio::prelude::*; // for write_all()
 use serde_derive::{Deserialize, Serialize};
+use crate::utils;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Test {
@@ -58,4 +59,13 @@ fn generate_test_template(test: &Test, logger: &str) -> String {
             + &annotation_end
             + &test_template;
     test_template
+}
+
+pub async fn generate_all_suites(tables: Vec<String>, output_dir: String) -> Result<(), std::io::Error> {
+    for table in tables {
+        create_dir(&table).await?;
+        let suite = utils::get_parsed_tables(&table);
+        generate_test_suite(suite, format!("{}/{}", output_dir,table)).await?;
+    }
+    Ok(())
 }
