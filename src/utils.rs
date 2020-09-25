@@ -1,4 +1,4 @@
-use std::fs::remove_dir_all;
+use std::fs::{metadata, remove_dir_all};
 use std::io::Error;
 use ansi_term::Colour::Blue;
 use std::path::Path;
@@ -23,8 +23,11 @@ pub fn get_project_ascii_art() -> &'static str {
 
 pub fn clear_workspace(path: &String, directories: &Vec<String>) -> Result<(), Error> {
   for dir in directories {
-    println!("removing: {}",Blue.paint(dir));
-    remove_dir_all(format!("{}/{}", path, dir))?
+    let _path = format!("{}/{}", path, dir);
+    if metadata(&_path).is_ok() {
+      println!("removing: {}",Blue.paint(dir));
+      remove_dir_all(&_path)?
+    }
   }
     Ok(())
 }
