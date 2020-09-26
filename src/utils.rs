@@ -1,10 +1,10 @@
-use std::fs::{metadata, remove_dir_all};
+use std::fs::{metadata, File};
 use std::io::Error;
 use ansi_term::Colour::Blue;
 use std::path::Path;
-use std::fs::File;
 use serde_derive::{Deserialize, Serialize};
 use crate::test_gen::Suite;
+use tokio::fs::{remove_dir_all};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PrivateConfig {
@@ -21,22 +21,26 @@ pub fn get_project_ascii_art() -> &'static str {
   ascii_art
 }
 
-pub fn clear_workspace(path: &String, directories: &Vec<String>) -> Result<(), Error> {
+pub async fn clear_workspace(path: &String, directories: &Vec<String>) -> Result<(), Error> {
   for dir in directories {
     let _path = format!("{}/{}", path, dir);
     if metadata(&_path).is_ok() {
       println!("removing: {}",Blue.paint(dir));
-      remove_dir_all(&_path)?
+      remove_dir_all(&_path).await?
     }
   }
     Ok(())
 }
 
 // Get config obj
-pub fn get_config(filename: &str) -> PrivateConfig {
+fn get_config(filename: &str) -> PrivateConfig {
   let config_path = Path::new(filename);
   let config_file = File::open(config_path).expect("file not found");
   serde_json::from_reader(config_file).expect("error while reading json")
+}
+
+pub async fn get_config_async(filename: &str) -> Result<PrivateConfig, Error> {
+  Ok(get_config(filename))
 }
 
 // Get the parsed tables data based on the tests sheets
