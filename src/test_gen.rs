@@ -2,6 +2,7 @@ use tokio::fs::{File, create_dir};
 use tokio::prelude::*; // for write_all()
 use serde_derive::{Deserialize, Serialize};
 use crate::utils;
+use ansi_term::Colour::Blue;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Test {
@@ -18,7 +19,8 @@ pub struct Suite {
     tests: Vec<Test>
 }
 
-async fn generate_test_suite(test_suites: Vec<Suite>, path: String) -> Result<(), std::io::Error> {
+async fn generate_test_suite(test_suites: Vec<Suite>, path: String) -> Result<u32, std::io::Error> {
+    let mut tests_count = 0;
     for suite in test_suites.iter() {
         // Create file per suite
         let mut test_file = File::create(format!("{}/{}.ts", path, suite.name)).await?;
@@ -27,6 +29,7 @@ async fn generate_test_suite(test_suites: Vec<Suite>, path: String) -> Result<()
         test_file.write_all(format!("export const {} = ({}) => {{", suite.name, logger).as_bytes()).await?;
 
         for test in suite.tests.iter() {
+            tests_count = tests_count + 1;
             let test_template = generate_test_template(test, logger);
             test_file.write_all(test_template.as_bytes()).await?;
         }
@@ -34,7 +37,9 @@ async fn generate_test_suite(test_suites: Vec<Suite>, path: String) -> Result<()
         // Closing suite main fn
         test_file.write_all(b"\n\n};").await?;
     }
-    Ok(())
+    println!("Total suites per table: {:?}", test_suites.len());
+    println!("Total Test templates per table: {:?} ✔️  ", tests_count);
+    Ok(tests_count)
 }
 
 fn generate_test_template(test: &Test, logger: &str) -> String {
@@ -65,12 +70,16 @@ fn normalize_test_steps(steps: &String) -> String {
     String::from(test_steps)
 }
 
-pub async fn generate_all_suites(tables: Vec<String>, output_dir: String) -> Result<(), std::io::Error> {
+pub async fn generate_all_suites(tables: Vec<String>, output_dir: String) -> Result<u32, std::io::Error> {
+    let mut tests_count = 0;
     for table in tables {
+        println!("⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️⚙️️⚙️️⚙️️⚙️️⚙️️⚙️️⚙️️⚙️️⚙️️⚙️️⚙️");
+        println!("Generating test suites from: {}",Blue.paint(&table));
         create_dir(&table).await?;
         let path = format!("sheets/tables/{}.json", table);
         let suite = utils::get_parser_tables_async(path).await?;
-        generate_test_suite(suite, format!("{}/{}", output_dir,table)).await?;
+        let count = generate_test_suite(suite, format!("{}/{}", output_dir,table)).await?;
+        tests_count = count + tests_count;
     }
-    Ok(())
+    Ok(tests_count)
 }

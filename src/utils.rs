@@ -14,10 +14,10 @@ pub struct PrivateConfig {
 
 pub fn get_project_ascii_art() -> &'static str {
   let ascii_art =
-  "________________________________________________
+  "👻|________________________________________________
   |___|___|___|___|___|___|___|___|___|___|___|___|
   |_|___ TS TESTS TEMPLATES GENERATOR |___|___|___|
-  |___|___|___|___|___|___|___|___|___|___|___|___|";
+  |___|___|___|___|___|___|___|___|___|___|___|___|👻";
   ascii_art
 }
 
@@ -25,7 +25,7 @@ pub async fn clear_workspace(path: &String, directories: &Vec<String>) -> Result
   for dir in directories {
     let _path = format!("{}/{}", path, dir);
     if metadata(&_path).is_ok() {
-      println!("removing: {}",Blue.paint(dir));
+      println!("removing older entry of: {}",Blue.paint(dir));
       remove_dir_all(&_path).await?
     }
   }
