@@ -69,7 +69,7 @@ pub async fn generate_all_suites(tables: Vec<String>, output_dir: String) -> Res
     for table in tables {
         create_dir(&table).await?;
         let path = format!("sheets/tables/{}.json", table);
-        let suite = utils::get_parsed_tables(path);
+        let suite = utils::get_parser_tables_async(path).await?;
         generate_test_suite(suite, format!("{}/{}", output_dir,table)).await?;
     }
     Ok(())

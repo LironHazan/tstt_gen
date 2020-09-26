@@ -36,12 +36,15 @@ pub fn clear_workspace(path: &String, directories: &Vec<String>) -> Result<(), E
 pub fn get_config(filename: &str) -> PrivateConfig {
   let config_path = Path::new(filename);
   let config_file = File::open(config_path).expect("file not found");
-  return serde_json::from_reader(config_file).expect("error while reading json");
+  serde_json::from_reader(config_file).expect("error while reading json")
 }
 
 // Get the parsed tables data based on the tests sheets
-pub fn get_parsed_tables(path: String) -> Vec<Suite> {
+fn get_parsed_tables(path: String) -> Vec<Suite> {
   let json_file_path = Path::new(&path);
   let json_file = File::open(json_file_path).expect("file not found");
-  return serde_json::from_reader(json_file).expect("error while reading json");
+  serde_json::from_reader(json_file).expect("error while reading json")
+}
+pub async fn get_parser_tables_async(path: String) -> Result<Vec<Suite>, Error> {
+  Ok(get_parsed_tables(path))
 }
