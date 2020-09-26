@@ -4,6 +4,10 @@ Super fast TS tests template generator written in Rust.
 
 WIP 
 
+
+![Image](./demo.png)
+
+
 #### Development process 
  
 Prepare tests suites as json from sheets: [read more](https://github.com/LironHazan/tstt_gen/tree/master/sheets)
