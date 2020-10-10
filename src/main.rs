@@ -3,9 +3,11 @@ mod utils;
 use tokio;
 extern crate serde;
 extern crate serde_json;
+use test_gen::TGenerator;
 use ansi_term::Colour::{ Green};
 use actix_files as fs;
 use actix_web::{App, HttpServer};
+use std::collections::HashMap;
 
 async fn run_tsttgen() -> Result<(), std::io::Error> {
     let config = utils::get_config_async("config.json").await?;
@@ -18,7 +20,8 @@ async fn run_tsttgen() -> Result<(), std::io::Error> {
 
     // Iterates the given suite tables (as json files) and generate Typescript suite files
     // containing empty test templates
-    let total_test_templates = test_gen::generate_all_suites(config.tables, config.output_dir).await?;
+    let total_test_templates = TGenerator::new(HashMap::new())
+        .generate_all_suites(config.tables, config.output_dir).await?;
     println!("{}", Green.paint("Done!"));
     println!(" ⭐  Generated {} test templates ⭐ ", total_test_templates);
     Ok(())
