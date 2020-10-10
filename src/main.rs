@@ -1,13 +1,13 @@
 mod test_gen;
 mod utils;
-
+use tokio;
 extern crate serde;
 extern crate serde_json;
-
 use ansi_term::Colour::{ Green};
+use actix_files as fs;
+use actix_web::{App, HttpServer};
 
-#[tokio::main]
-async fn main() -> Result<(), std::io::Error> {
+async fn run_tsttgen() -> Result<(), std::io::Error> {
     let config = utils::get_config_async("config.json").await?;
     println!("{}", utils::get_project_ascii_art());
     println!("{}", Green.paint("Generating test suites into: "));
@@ -23,3 +23,23 @@ async fn main() -> Result<(), std::io::Error> {
     println!(" ⭐  Generated {} test templates ⭐ ", total_test_templates);
     Ok(())
 }
+
+async fn serve_report() -> std::io::Result<()> {
+    let server_address = "127.0.0.1:8080"; //todo: move to config.json
+    let server =  HttpServer::new(|| {
+        App::new().service(fs::Files::new("/", "static/index.html"))
+    })
+        .bind(server_address)?
+        .run();
+    tokio::join!(server, utils::open_web_app(server_address));
+
+    Ok(())
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    run_tsttgen().await?;
+    serve_report().await
+}
+
+

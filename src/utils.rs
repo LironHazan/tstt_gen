@@ -52,3 +52,15 @@ fn get_parsed_tables(path: String) -> Vec<Suite> {
 pub async fn get_parser_tables_async(path: String) -> Result<Vec<Suite>, Error> {
   Ok(get_parsed_tables(path))
 }
+
+// Opens chrome once the server starts
+pub async fn open_web_app(url: &str) -> () {
+  use std::process::Command;
+  let mut cmd = Command::new("open");
+  cmd.arg("-a")
+      .arg("Google Chrome")
+      .arg(format!("http://{}", url))
+      .spawn()
+      .expect("failed to spawn child");
+  println!("{}", url)
+}
