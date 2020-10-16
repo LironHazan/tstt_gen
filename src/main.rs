@@ -6,8 +6,10 @@ extern crate serde_json;
 use test_gen::TGenerator;
 use ansi_term::Colour::{ Green};
 use actix_files as fs;
-use actix_web::{App, HttpServer};
+use actix_web::{App, HttpServer, web, HttpRequest, HttpResponse};
 use std::collections::HashMap;
+use actix_web::http::header;
+use serde::{Deserialize, Serialize};
 
 async fn run_tsttgen() -> Result<(), std::io::Error> {
     let config = utils::get_config_async("config.json").await?;
@@ -27,10 +29,30 @@ async fn run_tsttgen() -> Result<(), std::io::Error> {
     Ok(())
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct TestObj {
+    name: String,
+    number: i32,
+}
+
+async fn test_route(req: HttpRequest) -> HttpResponse {
+    println!("{:?}", req);
+    let test_obj: TestObj = TestObj {
+        name: String::from("foo"),
+        number: 32
+    };
+
+    HttpResponse::Ok()
+        .content_type("text/plain")
+        .json(test_obj)
+}
+
 async fn serve_report() -> std::io::Result<()> {
     let server_address = "127.0.0.1:8080"; //todo: move to config.json
     let server =  HttpServer::new(|| {
-        App::new().service(fs::Files::new("/", "static/index.html"))
+        App::new()
+            .service(web::resource("/results").route(web::get().to(test_route)))
+            .service(fs::Files::new("/", "static/index.html"))
     })
         .bind(server_address)?
         .run();
