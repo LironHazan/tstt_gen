@@ -3,8 +3,8 @@ use std::io::Error;
 use ansi_term::Colour::Blue;
 use std::path::Path;
 use serde_derive::{Deserialize, Serialize};
-use crate::test_gen::Suite;
 use tokio::fs::{remove_dir_all};
+use crate::test_gen::test_gen::Suite;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PrivateConfig {
