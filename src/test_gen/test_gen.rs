@@ -2,9 +2,11 @@ use tokio::fs::{File, create_dir};
 use tokio::prelude::*; // for write_all()
 use serde_derive::{Deserialize, Serialize};
 use crate::test_gen::utils;
-use ansi_term::Colour::Blue;
+use ansi_term::Colour::{ Green, Blue};
 use std::collections::HashMap;
 use std::collections::hash_map::{Values};
+extern crate serde;
+extern crate serde_json;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Test {
@@ -101,3 +103,24 @@ impl TGenerator  {
         Ok(tests_count)
     }
 }
+
+pub async fn run_tsttgen() -> Result<usize, std::io::Error> {
+    let config = utils::get_config_async("config.json").await?;
+    println!("{}", utils::get_project_ascii_art());
+    println!("{}", Green.paint("Generating test suites into: "));
+    println!("{}", Green.paint(&config.output_dir));
+
+    // Removes the previous templates so be careful not to override anything!
+    utils::clear_workspace(&config.output_dir, &config.tables).await?;
+
+    // Iterates the given suite tables (as json files) and generate Typescript suite files
+    // containing empty test templates
+    let mut generator =  TGenerator::new(HashMap::new());
+    let total_test_templates = generator.generate_all_suites(config.tables, config.output_dir).await?;
+    let total_suites = TGenerator::get_suites_state(&generator).count();
+
+    println!("{}", Green.paint("Done!"));
+    println!(" ⭐  Generated {} test templates from {} test suites", total_test_templates, total_suites);
+    Ok(total_suites)
+}
+
