@@ -4,7 +4,7 @@ use serde_derive::{Deserialize, Serialize};
 use crate::test_gen::utils;
 use ansi_term::Colour::Blue;
 use std::collections::HashMap;
-use std::collections::hash_map::{RandomState, Values};
+use std::collections::hash_map::{Values};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Test {

@@ -6,12 +6,8 @@ extern crate serde;
 extern crate serde_json;
 use test_gen::test_gen::{TGenerator};
 use ansi_term::Colour::{ Green};
-use actix_web::{App, HttpServer, web, HttpRequest, HttpResponse};
 use std::collections::HashMap;
-use actix_web::http::header;
-use serde::{Deserialize, Serialize};
 use crate::test_gen::utils;
-use crate::server::routes::AppState;
 
 async fn run_tsttgen() -> Result<usize, std::io::Error> {
     let config = utils::get_config_async("config.json").await?;
@@ -35,13 +31,7 @@ async fn run_tsttgen() -> Result<usize, std::io::Error> {
 
 async fn serve_report(results_count: usize) -> std::io::Result<()> {
     let server_address = "127.0.0.1:8080"; //todo: move to config.json
-    let server =  HttpServer::new(move || {
-        App::new().data(AppState {
-            results_count,
-        })
-        .configure(server::routes::init_routes)})
-        .bind(server_address)?
-        .run();
+    let server = server::start_server(results_count).await?;
     tokio::join!(server, utils::open_web_app(server_address));
     Ok(())
 }

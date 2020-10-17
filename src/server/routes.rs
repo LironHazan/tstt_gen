@@ -1,4 +1,4 @@
-use actix_web::{delete, get, post, put, web, HttpResponse};
+use actix_web::{get, web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use actix_files as fs;
 use actix_files::Files;
