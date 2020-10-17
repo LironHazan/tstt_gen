@@ -4,6 +4,7 @@ use serde_derive::{Deserialize, Serialize};
 use crate::test_gen::utils;
 use ansi_term::Colour::Blue;
 use std::collections::HashMap;
+use std::collections::hash_map::{RandomState, Values};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Test {
@@ -27,6 +28,10 @@ pub struct TGenerator {
 impl TGenerator  {
     pub fn new(suites_map: HashMap<String, Vec<String>>) -> Self { // builder
         Self { suites_map }
+    }
+
+    pub fn get_suites_state(&self) -> Values<'_, String, Vec<String>> {
+        self.suites_map.values()
     }
 
     async fn generate_test_suite(&mut self, test_suites: Vec<Suite>, path: String) -> Result<u32, std::io::Error> {

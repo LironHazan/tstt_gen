@@ -3,17 +3,21 @@ use serde::{Deserialize, Serialize};
 use actix_files as fs;
 use actix_files::Files;
 
+pub struct AppState {
+    pub results_count: usize,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct TestObj {
     name: String,
-    number: i32,
+    number: usize,
 }
 
-#[get("/foos")]
-async fn test_route() -> Result<HttpResponse, ()> {
+#[get("/results")]
+async fn test_route(data: web::Data<AppState>) -> Result<HttpResponse, ()> {
     let test_obj: TestObj = TestObj {
         name: String::from("foo"),
-        number: 32
+        number: data.results_count
     };
     Ok(HttpResponse::Ok().json(test_obj))
 }
