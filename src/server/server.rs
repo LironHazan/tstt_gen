@@ -2,11 +2,23 @@ use crate::server::routes::AppState;
 use crate::server;
 use actix_web::dev::Server;
 use actix_web::{App, HttpServer};
+use actix_web::http::header;
+use actix_cors::Cors;
+
 
 // Starts the server with wanted configuration and shared state
 async fn start_server(results_count: usize, server_address: &str) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(move || {
-        App::new().data(AppState {
+        App::new().wrap(
+            Cors::new()
+                .allowed_origin("http://localhost:3000") // The local client I'm developing in Elm is currently using port 3000
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+                .allowed_header(header::CONTENT_TYPE)
+                .max_age(3600)
+                .finish(),
+        )
+            .data(AppState {
             results_count,
         }).configure(server::routes::init_routes)})
         .bind(server_address)?
