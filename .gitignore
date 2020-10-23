@@ -4,3 +4,6 @@ private_config.json
 sheets/private
 sheets/node_modules
 sheets/tables
+# elm-package generated files
+static/elm-stuff
+static/elm.js

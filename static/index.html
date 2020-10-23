@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>Main</title>
+  <script src="elm.js"></script>
 </head>
+
 <body>
-    <div> hey! - This will be a simple controller in Elm so keep tracking </div>
+<div id="myapp"></div>
+<script>
+   Elm.Main.init({node: document.getElementById('myapp')});
+</script>
 </body>
 </html>

@@ -23,7 +23,7 @@ async fn test_route(data: web::Data<AppState>) -> Result<HttpResponse, ()> {
 }
 
 fn static_files() -> Files {
-    fs::Files::new("/", "static/index.html")
+    fs::Files::new("/", "./static/").index_file("index.html")
 }
 
 pub fn init_routes(config: &mut web::ServiceConfig) {
